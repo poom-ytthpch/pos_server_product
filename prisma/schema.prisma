@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  cate_id   Int       @id @default(autoincrement())
+  cate_name String
+  Product   Product[]
+}
+
+model Unit {
+  unit_id   Int       @id @default(autoincrement())
+  unit_name String
+  Product   Product[]
+}
+
+model Product {
+  p_id          String   @id
+  p_name        String
+  p_image       String
+  cate_id       Int
+  p_status      Boolean  @default(true)
+  Category      Category @relation(fields: [cate_id], references: [cate_id])
+  unit_id       Int
+  Unit          Unit     @relation(fields: [unit_id], references: [unit_id])
+  unit_in_stock Float
+  unit_price    Float
+  cost_price    Float
+  user_id       String
+  createAt      DateTime @default(now())
+  updateAt      DateTime @updatedAt
+  Sales         Sales[]
+}
+
+model Payment {
+  pay_id   String    @id
+  pay_name String
+  Invoice  Invoice[]
+}
+
+model Invoice {
+  inv_id       String   @id
+  pay_id       String
+  Payment      Payment  @relation(fields: [pay_id], references: [pay_id])
+  total_amount Float
+  createAt     DateTime @default(now())
+  updateAt     DateTime @updatedAt
+  user_id      String
+  Sales        Sales[]
+}
+
+model SalesType {
+  sale_type_id   String  @id
+  sale_type_name String
+  Sales          Sales[]
+}
+
+model Sales {
+  sales_id      String    @id
+  sales_type_id String
+  SalesType     SalesType @relation(fields: [sales_type_id], references: [sale_type_id])
+  inv_id        String
+  Invoice       Invoice   @relation(fields: [inv_id], references: [inv_id])
+  p_id          String
+  Product       Product   @relation(fields: [p_id], references: [p_id])
+  qty           Float
+  unit_price    Float
+}

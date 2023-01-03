@@ -1,0 +1,69 @@
+scalar Date
+
+type Product {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+type Category {
+  cate_id: String
+  cate_name: String
+}
+
+type Unit {
+  unit_id: Int
+  unit_name: String
+}
+
+type Product {
+  p_id: String
+  p_name: String
+  p_image: String
+  cate_id: String
+  p_status: Boolean
+  unit_id: Int
+  unit_in_stock: Float
+  unit_price: Float
+  cost_price: Float
+  user_id: String
+  createAt: Date
+  updateAt: Date
+}
+
+input CreateProductInput {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input UpdateProductInput {
+  id: Int!
+}
+
+input UploadFileInput {
+  file: String
+  fileName: String
+}
+
+input CreateUnitInput {
+  name: String
+}
+
+input CreateCategoryInput {
+  name: String
+}
+
+type Query {
+  units: [Unit]
+  categories:[Category]
+  products: [Product]
+  product(id: Int!): Product
+}
+
+type Mutation {
+  createCategory(createCategoryInput:CreateCategoryInput!):Category!
+  createUnit(createUnitInput: CreateUnitInput!): Unit!
+  createProduct(createProductInput: CreateProductInput!): Product!
+  updateProduct(updateProductInput: UpdateProductInput!): Product!
+  removeProduct(id: Int!): Product
+  uploadFile(uploadFileInput: UploadFileInput): Boolean
+}
