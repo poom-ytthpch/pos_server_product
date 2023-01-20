@@ -28,8 +28,17 @@ export class CreateCategoryInput {
     name?: Nullable<string>;
 }
 
+export class Category {
+    cate_id?: Nullable<number>;
+    cate_name?: Nullable<string>;
+}
+
+export class Unit {
+    unit_id?: Nullable<number>;
+    unit_name?: Nullable<string>;
+}
+
 export class Product {
-    exampleField?: Nullable<number>;
     p_id?: Nullable<string>;
     p_name?: Nullable<string>;
     p_image?: Nullable<string>;
@@ -42,16 +51,6 @@ export class Product {
     user_id?: Nullable<string>;
     createAt?: Nullable<Date>;
     updateAt?: Nullable<Date>;
-}
-
-export class Category {
-    cate_id?: Nullable<string>;
-    cate_name?: Nullable<string>;
-}
-
-export class Unit {
-    unit_id?: Nullable<number>;
-    unit_name?: Nullable<string>;
 }
 
 export abstract class IQuery {

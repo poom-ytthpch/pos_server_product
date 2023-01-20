@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -33,8 +33,8 @@ import { join } from 'path';
       cors: {
         origin: ["https://sandbox.embed.apollographql.com", "http://localhost:3000"]
       },
-      context: ({ request , req }) => ({
-        
+      context: ({ request, req }) => ({
+
         request: request || req,
         customHeaders: {
           headers: {

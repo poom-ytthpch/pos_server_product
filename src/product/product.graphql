@@ -1,12 +1,7 @@
 scalar Date
 
-type Product {
-  # Example field (placeholder)
-  exampleField: Int
-}
-
 type Category {
-  cate_id: String
+  cate_id: Int
   cate_name: String
 }
 

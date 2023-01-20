@@ -1,16 +1,22 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Category, CreateCategoryInput, CreateProductInput } from "../types/graphql/graphql"
 import * as path from 'path';
 import { UploadFileInput, CreateUnitInput, Unit } from '../types/graphql/graphql';
 // import { base64toFile } from 'src/common/base64toFile';
 import { createWriteStream, fstat, readFile, unlink, writeFileSync } from 'fs';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import to from "await-to-js"
+import { Cache } from 'cache-manager';
+
 @Injectable()
 
 
 export class ProductService {
 
-  constructor(private readonly _prismaService: PrismaService) { }
+  constructor(
+    private readonly _prismaService: PrismaService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+  ) { }
 
   async createCategory(createCategoryInput: CreateCategoryInput): Promise<Category> {
 
@@ -50,17 +56,35 @@ export class ProductService {
       )
     }
 
-    return this._prismaService.unit.create({ data: { unit_name: name } }) as Unit
+    const [errGetUnits, getUnits] = await to(this.cacheManager.get('units'))
+
+    if (getUnits) {
+      await this.cacheManager.del('units')
+    }
+
+    const [errCreateUnit, createUnit] = await to(this._prismaService.unit.create({ data: { unit_name: name } }))
+
+    return createUnit as Unit
   }
 
   async units(): Promise<Unit[]> {
-    const res = await this._prismaService.unit.findMany()
-    return res as Unit[]
+    const [errGet, get] = await to(this.cacheManager.get('units'))
+    if (!get) {
+      const [err, res] = await to(this._prismaService.unit.findMany())
+      const [errSet, set] = await to(this.cacheManager.set(`units`, res))
+      console.log({ set })
+
+      return res as Unit[]
+    }
+
+    console.log({ get })
+
+    return get as Unit[]
   }
 
   async categories(): Promise<Category[]> {
-    const res = await this._prismaService.category.findMany()
-    return res as unknown as Category[]
+    const [err, res] = await to(this._prismaService.category.findMany())
+    return res as Category[]
   }
 
   create(createProductInput: CreateProductInput) {
